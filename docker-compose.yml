@@ -1,0 +1,197 @@
+version: "3.8"
+
+services:
+  postgres-login:
+    image: postgres:15
+    container_name: postgres-login
+    environment:
+      POSTGRES_USER: karen
+      POSTGRES_PASSWORD: 2007
+      POSTGRES_DB: usuarios_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - login_pg_data:/var/lib/postgresql/data
+
+  login-service:
+    build: ./users/login-service-full
+    container_name: login-service-full
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-login
+
+  user-registration-service:
+    build: ./users/registration-service
+    container_name: registration-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-login
+
+  reset-password-service:
+    build: ./users/reset-password-service
+    container_name: reset-password-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-login
+
+  verify-email-service:
+    build: ./users/verify-email-service
+    container_name: verify-email-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres-login
+
+  create-account-service:
+    build: ./cuentas/create-account-service
+    container_name: create-account-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres-login
+
+  get-account-service:
+    build: ./cuentas/get-account-service
+    container_name: get-account-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - postgres-login
+
+  close-account-service:
+    build: ./cuentas/close-account-service
+    container_name: close-account-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - postgres-login
+
+  validate-account-service:
+    build: ./cuentas/validate-account-service
+    container_name: validate-account-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      - postgres-login
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  deposit-service:
+    build: ./movimientos/deposit-service
+    container_name: deposit-service
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mongodb
+      - get-account-service
+
+  transfer-service:
+    build: ./movimientos/transfer-service
+    container_name: transfer-service
+    ports:
+      - "8090:8090"
+    depends_on:
+      - mongodb
+      - get-account-service
+
+  transaction-history-service:
+    build: ./movimientos/transaction-history-service
+    container_name: transaction-history-service
+    ports:
+      - "8091:8091"
+    depends_on:
+      - mongodb
+      
+  get-transaction-service:
+    build: ./movimientos/get-transaction-service
+    container_name: get-transaction-service
+    ports:
+      - "8092:8092"
+    depends_on:
+      - mongodb
+
+  alerts-service:
+    build: ./movimientos/alerts-service
+    container_name: alerts-service
+    ports:
+      - "8093:8093"
+    depends_on:
+      - mongodb
+
+  withdraw-service:
+    build: ./movimientos/withdraw-service
+    container_name: withdraw-service
+    ports:
+      - "8094:8094"
+    depends_on:
+      - mongodb
+
+  send-email-service:
+    build: ./notificaciones/send-email-service
+    container_name: send-email-service
+    ports:
+      - "8095:8095"
+    depends_on:
+      - mongodb
+
+  send-sms-service:
+    build: ./notificaciones/send-sms-service
+    container_name: send-sms-service
+    ports:
+      - "8096:8096"
+    depends_on:
+      - mongodb
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  verify-session-service:
+    build: ./registro/verify-session-service
+    container_name: verify-session-service
+    ports:
+      - "8097:8097"
+    depends_on:
+      - redis
+      
+  expire-session-service:
+    build: ./registro/expire-session-service
+    container_name: expire-session-service
+    ports:
+      - "8099:8099"
+    depends_on:
+      - redis
+
+  log-error-service:
+    build: ./registro/log-error-service
+    container_name: log-error-service
+    ports:
+      - "8100:8100"
+    depends_on:
+      - redis
+
+  exchange-rate-service:
+    build: ./divisas/exchange-rate-service
+    container_name: exchange-rate-service
+    ports:
+      - "8098:8098"
+    depends_on:
+      - postgres-login
+
+volumes:
+  login_pg_data:
+  mongo_data:
+  redis_data:

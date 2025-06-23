@@ -1,0 +1,4 @@
+com\banco\resetpasswordservice\entity.class
+com\banco\resetpasswordservice\repository.class
+com\banco\resetpasswordservice\ResetpasswordserviceApplication.class
+com\banco\resetpasswordservice\controller.class

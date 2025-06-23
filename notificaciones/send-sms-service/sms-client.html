@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enviar SMS</title>
+    <script>
+        var socket = new WebSocket("ws://localhost:8096/ws/sms");
+
+        function sendSMS() {
+            const phone = document.getElementById("phone").value;
+            const body = document.getElementById("body").value;
+
+            socket.send(JSON.stringify({ phone: phone, body: body }));
+
+            socket.onmessage = function(event) {
+                document.getElementById("response").innerText = event.data;
+            };
+        }
+    </script>
+</head>
+<body>
+    <h2>Enviar SMS</h2>
+    <label>Teléfono:</label><br>
+    <input id="phone" type="text"><br>
+    <label>Mensaje:</label><br>
+    <textarea id="body"></textarea><br><br>
+    <button onclick="sendSMS()">Enviar SMS</button>
+    <p id="response"></p>
+</body>
+</html>
