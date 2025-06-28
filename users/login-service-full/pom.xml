@@ -39,6 +39,13 @@
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-lang3</artifactId>
 </dependency>
+<!-- Spring Security Core para usar BCryptPasswordEncoder -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-core</artifactId>
+    <version>6.2.1</version>
+</dependency>
+
   </dependencies>
   
   <build>
