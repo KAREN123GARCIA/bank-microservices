@@ -1,6 +1,10 @@
 version: "3.8"
 
 services:
+
+  ##################################################
+  # 🔐 DOMINIO: USERS
+  ##################################################
   postgres-login:
     image: postgres:15
     container_name: postgres-login
@@ -45,6 +49,9 @@ services:
     depends_on:
       - postgres-login
 
+  ##################################################
+  # 💳 DOMINIO: ACCOUNTS
+  ##################################################
   create-account-service:
     build: ./cuentas/create-account-service
     container_name: create-account-service
@@ -77,6 +84,9 @@ services:
     depends_on:
       - postgres-login
 
+  ##################################################
+  # 💸 DOMINIO: MOVEMENTS
+  ##################################################
   mongodb:
     image: mongo:6
     container_name: mongodb
@@ -110,7 +120,7 @@ services:
       - "8091:8091"
     depends_on:
       - mongodb
-      
+
   get-transaction-service:
     build: ./movimientos/get-transaction-service
     container_name: get-transaction-service
@@ -135,6 +145,9 @@ services:
     depends_on:
       - mongodb
 
+  ##################################################
+  # 🔔 DOMINIO: NOTIFICATIONS
+  ##################################################
   send-email-service:
     build: ./notificaciones/send-email-service
     container_name: send-email-service
@@ -151,6 +164,9 @@ services:
     depends_on:
       - mongodb
 
+  ##################################################
+  # ⚙️ DOMINIO: CONFIGURATION / MONITORING
+  ##################################################
   redis:
     image: redis:7
     container_name: redis
@@ -166,7 +182,7 @@ services:
       - "8097:8097"
     depends_on:
       - redis
-      
+
   expire-session-service:
     build: ./registro/expire-session-service
     container_name: expire-session-service
@@ -183,6 +199,9 @@ services:
     depends_on:
       - redis
 
+  ##################################################
+  # 💱 DOMINIO: CURRENCY EXCHANGE
+  ##################################################
   exchange-rate-service:
     build: ./divisas/exchange-rate-service
     container_name: exchange-rate-service
@@ -190,6 +209,38 @@ services:
       - "8098:8098"
     depends_on:
       - postgres-login
+
+  ##################################################
+  # 🌐 API GATEWAY
+  ##################################################
+  nginx-gateway:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - login-service
+      - user-registration-service
+      - reset-password-service
+      - verify-email-service
+      - create-account-service
+      - get-account-service
+      - close-account-service
+      - validate-account-service
+      - deposit-service
+      - transfer-service
+      - transaction-history-service
+      - get-transaction-service
+      - alerts-service
+      - withdraw-service
+      - send-email-service
+      - send-sms-service
+      - verify-session-service
+      - exchange-rate-service
+      - expire-session-service
+      - log-error-service
 
 volumes:
   login_pg_data:
