@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  postgres-users:
+    image: postgres:15
+    container_name: postgres-users
+    environment:
+      POSTGRES_USER: karen
+      POSTGRES_PASSWORD: 2007
+      POSTGRES_DB: usuarios_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - login_pg_data:/var/lib/postgresql/data
+    networks:
+      - users_net
+
+  login-service:
+    build: ./login-service-full
+    container_name: login-service-full
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-users
+    networks:
+      - users_net
+
+  user-registration-service:
+    build: ./registration-service
+    container_name: registration-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-users
+    networks:
+      - users_net
+
+  reset-password-service:
+    build: ./reset-password-service
+    container_name: reset-password-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-users
+    networks:
+      - users_net
+
+  verify-email-service:
+    build: ./verify-email-service
+    container_name: verify-email-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres-users
+    networks:
+      - users_net
+
+  nginx-gateway:
+    image: nginx:latest
+    container_name: nginx-gateway
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - login-service
+      - user-registration-service
+      - reset-password-service
+      - verify-email-service
+    networks:
+      - users_net
+
+volumes:
+  login_pg_data:
+
+networks:
+  users_net:
