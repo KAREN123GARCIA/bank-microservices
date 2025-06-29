@@ -55,20 +55,6 @@ services:
     networks:
       - users_net
 
-  nginx-gateway:
-    image: nginx:latest
-    container_name: nginx-gateway
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - login-service
-      - user-registration-service
-      - reset-password-service
-      - verify-email-service
-    networks:
-      - users_net
-
 volumes:
   login_pg_data:
 

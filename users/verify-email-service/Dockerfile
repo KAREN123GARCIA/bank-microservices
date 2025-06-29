@@ -1,21 +1,26 @@
+# Etapa 1: Build del proyecto con Maven
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiamos primero los archivos importantes para cacheo de dependencias
+# Copiar los archivos del proyecto
 COPY pom.xml .
 COPY src ./src
 
-# Compilar el proyecto sin correr los tests
+# Copiar también el archivo de credenciales
+COPY src/main/resources/credentials/credentials.json ./src/main/resources/credentials/credentials.json
+
+# Compilar sin tests
 RUN mvn clean package -DskipTests
 
+# Etapa 2: Imagen final para ejecutar el microservicio
 FROM eclipse-temurin:17
 WORKDIR /app
 
-# Copiar el jar compilado desde la etapa anterior
+# Copiar el jar generado
 COPY --from=build /app/target/*.jar app.jar
 
-# Exponer el puerto del servicio
+# Exponer el puerto
 EXPOSE 8084
 
-# Ejecutar el jar
+# Comando para iniciar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
