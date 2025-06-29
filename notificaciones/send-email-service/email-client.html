@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prueba envío de email - WebSocket</title>
+</head>
+<body>
+  <h1>Enviar Email (WebSocket)</h1>
+  <label>To: <input id="to" type="email" value="karen@example.com"></label><br>
+  <label>Subject: <input id="subject" type="text" value="Prueba WebSocket"></label><br>
+  <label>Body:<br><textarea id="body" rows="5" cols="40">Hola Karen, esto es una prueba.</textarea></label><br>
+  <button onclick="send()">Enviar</button>
+  <pre id="output"></pre>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8095/ws/email");
+    ws.onmessage = (event) => {
+      document.getElementById("output").textContent = event.data;
+    };
+
+    function send() {
+      const msg = {
+        to: document.getElementById("to").value,
+        subject: document.getElementById("subject").value,
+        body: document.getElementById("body").value
+      };
+      ws.send(JSON.stringify(msg));
+    }
+  </script>
+</body>
+</html>

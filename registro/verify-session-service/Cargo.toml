@@ -1,0 +1,10 @@
+[package]
+name = "verify-session-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-graphql = "6"
+async-graphql-axum = "6"
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }

@@ -1,0 +1,4 @@
+com\banco\registration\RegistrationController.class
+com\banco\registration\RegistrationApplication.class
+com\banco\registration\Customer.class
+com\banco\registration\CustomerRepository.class
